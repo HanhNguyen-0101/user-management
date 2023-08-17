@@ -3,7 +3,7 @@ import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({
@@ -15,43 +15,41 @@ export class User {
   @Column({
     default: false,
   })
-  is_pending: boolean;
+  isPending: boolean;
 
   @Column({
     default: false,
   })
-  is_disable: boolean;
+  isDisable: boolean;
 
   @Column({
     type: 'timestamp without time zone',
   })
-  created_at: Date;
+  createdAt: Date;
 
   @Column({
     type: 'timestamp without time zone',
   })
-  updated_at: Date;
+  updatedAt: Date;
 
-  @Column({
-    type: 'uuid',
-  })
-  updated_by: number;
+  @Column('uuid')
+  updatedBy: number;
 
   @Column()
-  first_name: string;
+  firstName: string;
 
   @Column()
-  last_name: string;
+  lastName: string;
 
   @Column()
-  global_id: string;
+  globalId: string;
 
   @Column()
-  office_code: string;
+  officeCode: string;
 
   @Column()
   country: string;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user_id)
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
 }

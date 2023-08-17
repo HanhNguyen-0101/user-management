@@ -1,26 +1,23 @@
+import { Role } from 'src/roles/entities/role.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class UserRole {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  userId: number;
 
-  @Column({
-    type: 'uuid',
-  })
-  user_id: number;
-
-  @Column({
-    type: 'uuid',
-  })
-  role_id: number;
+  @PrimaryGeneratedColumn('uuid')
+  roleId: number;
 
   @Column({
     type: 'timestamp without time zone',
   })
-  assigned_at: Date;
+  assignedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.userRoles)
   user: User;
+
+  @ManyToOne(() => Role, (role) => role.userRoles)
+  role: Role;
 }
