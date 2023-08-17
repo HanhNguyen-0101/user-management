@@ -1,5 +1,12 @@
 import { UserRole } from 'src/user-roles/entities/user-role.entity';
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -12,22 +19,24 @@ export class User {
   })
   email: string;
 
-  @Column({
-    default: false,
-  })
+  @Column()
+  password: string;
+
+  @Column()
+  refreshToken: string;
+
+  @Column()
   isPending: boolean;
 
-  @Column({
-    default: false,
-  })
+  @Column()
   isDisable: boolean;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp without time zone',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp without time zone',
   })
   updatedAt: Date;
