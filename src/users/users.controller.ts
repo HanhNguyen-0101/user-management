@@ -17,13 +17,11 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //get all users
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  //get user by id
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<User> {
     const user = await this.usersService.findOne(id);
@@ -34,13 +32,11 @@ export class UsersController {
     }
   }
 
-  //create user
   @Post()
   async create(@Body() user: CreateUserDto): Promise<User> {
     return this.usersService.create(user);
   }
 
-  //update user
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -49,7 +45,6 @@ export class UsersController {
     return this.usersService.update(id, user);
   }
 
-  //delete user
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<any> {
     //handle error if user does not exist
