@@ -1,14 +1,14 @@
 export class CreateUserDto {
   readonly id: number;
   readonly email: string;
-  readonly is_pending: boolean;
-  readonly is_disable: boolean;
-  readonly created_at: Date;
-  readonly updated_at: Date;
-  readonly updated_by: number;
-  readonly first_name: string;
-  readonly last_name: string;
-  readonly global_id: string;
-  readonly office_code: string;
+  readonly isPending: boolean;
+  readonly isDisable: boolean;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  readonly updatedBy: number;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly globalId: string;
+  readonly officeCode: string;
   readonly country: string;
 }
