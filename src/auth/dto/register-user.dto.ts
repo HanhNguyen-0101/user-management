@@ -1,11 +1,16 @@
+import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
+
 export class RegisterUserDto {
+  @IsNotEmpty()
+  @IsEmail()
   readonly email: string;
+
+  @IsNotEmpty()
   readonly password: string;
-  readonly isPending: boolean;
-  readonly isDisable: boolean;
-  readonly createdAt: Date;
-  readonly updatedAt: Date;
-  readonly updatedBy: number;
+
+  @IsUUID()
+  readonly updatedBy: string;
+
   readonly firstName: string;
   readonly lastName: string;
   readonly globalId: string;

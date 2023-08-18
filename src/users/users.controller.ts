@@ -8,6 +8,9 @@ import {
   Delete,
   NotFoundException,
   UseGuards,
+  ParseUUIDPipe,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,11 +25,12 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get()
   async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+    return await this.usersService.findAll();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException('User does not exist!');
@@ -35,26 +39,30 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   @Post()
   async create(@Body() user: CreateUserDto): Promise<User> {
-    return this.usersService.create(user);
+    return await this.usersService.create(user);
   }
 
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() user: UpdateUserDto,
-  ): Promise<any> {
-    return this.usersService.update(id, user);
+  ): Promise<User> {
+    return await this.usersService.update(id, user);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<any> {
-    //handle error if user does not exist
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException('User does not exist!');
     }
-    return this.usersService.delete(id);
+    return await this.usersService.delete(id);
   }
 }

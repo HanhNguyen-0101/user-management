@@ -14,19 +14,20 @@ import { LoginUserDto } from './dto/login-user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UsePipes(ValidationPipe)
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto): Promise<User> {
-    return this.authService.register(registerUser);
+    return await this.authService.register(registerUser);
   }
 
-  @Post('login')
   @UsePipes(ValidationPipe)
+  @Post('login')
   async login(@Body() loginUser: LoginUserDto): Promise<any> {
-    return this.authService.login(loginUser);
+    return await this.authService.login(loginUser);
   }
 
   @Post('refresh-token')
   async refreshToken(@Body() { refreshToken }): Promise<any> {
-    return this.authService.refreshToken(refreshToken);
+    return await this.authService.refreshToken(refreshToken);
   }
 }

@@ -18,13 +18,13 @@ export class AuthService {
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
     const hashPassword = await this.hashPassword(registerUserDto.password);
-    const newRegisterUserDto = this.userRepository.create({
+    const newRegisterUserDto = await this.userRepository.create({
       ...registerUserDto,
       refreshToken: 'refresh_token',
       password: hashPassword,
     });
 
-    return this.userRepository.save(newRegisterUserDto);
+    return await this.userRepository.save(newRegisterUserDto);
   }
 
   async login(loginUserDto: LoginUserDto): Promise<any> {
@@ -71,7 +71,7 @@ export class AuthService {
   }
 
   private async generateToken(payload: {
-    id: number;
+    id: string;
     email: string;
   }): Promise<any> {
     const accessToken = await this.jwtService.signAsync(payload);
