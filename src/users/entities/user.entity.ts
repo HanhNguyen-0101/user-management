@@ -52,7 +52,11 @@ export class User {
   })
   updatedAt: Date;
 
-  @Column('uuid')
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
   updatedBy: string;
 
   @Column()
@@ -70,12 +74,10 @@ export class User {
   @Column()
   country: string;
 
-  @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: 'updatedBy' })
-  updatedByUser?: User;
+  // @ManyToOne(() => User)
+  // @JoinColumn({ name: 'updatedBy' })
+  // updatedByUser: User;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user, {
-    eager: true,
-  })
+  @OneToMany(() => UserRole, (userRole) => userRole.user)
   userRoles: UserRole[];
 }

@@ -45,9 +45,9 @@ export class UsersService {
         'updatedAt',
         'createdAt',
       ],
-      relations: {
-        updatedByUser: true,
-      },
+      // relations: {
+      //   updatedByUser: true,
+      // },
     });
 
     const lastPage = Math.ceil(total / itemPerPage);
@@ -66,15 +66,19 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     return await this.userRepository.findOne({
       where: { id },
-      relations: {
-        updatedByUser: true,
-      },
+      // relations: {
+      //   updatedByUser: true,
+      // },
     });
   }
 
   async create(user: CreateUserDto): Promise<User> {
     const hashPassword = await this.hashPassword(user.password);
-    return await this.userRepository.save({ ...user, password: hashPassword });
+    return await this.userRepository.save({
+      ...user,
+      password: hashPassword,
+      refreshToken: 'refresh_token',
+    });
   }
 
   async update(id: string, user: UpdateUserDto): Promise<User> {

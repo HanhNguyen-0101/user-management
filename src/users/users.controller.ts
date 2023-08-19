@@ -12,6 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -52,18 +53,22 @@ export class UsersController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
-  async create(@Body() user: CreateUserDto): Promise<User> {
-    return await this.usersService.create(user);
+  async create(@Req() req: any, @Body() user: CreateUserDto): Promise<User> {
+    return await this.usersService.create({ ...user, updatedBy: req.user.id });
   }
 
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
+    @Req() req: any,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() user: UpdateUserDto,
   ): Promise<User> {
-    return await this.usersService.update(id, user);
+    return await this.usersService.update(id, {
+      ...user,
+      updatedBy: req.user.id,
+    });
   }
 
   @UseGuards(AuthGuard)
