@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiQuery } from '@nestjs/swagger';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -46,6 +45,9 @@ export class UsersService {
         'updatedAt',
         'createdAt',
       ],
+      relations: {
+        updatedByUser: true,
+      },
     });
 
     const lastPage = Math.ceil(total / itemPerPage);
@@ -62,7 +64,12 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return await this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        updatedByUser: true,
+      },
+    });
   }
 
   async create(user: CreateUserDto): Promise<User> {

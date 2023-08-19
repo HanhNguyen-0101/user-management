@@ -6,12 +6,14 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id: string;
 
   @Column({
     length: 255,
@@ -68,6 +70,12 @@ export class User {
   @Column()
   country: string;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @ManyToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedByUser?: User;
+
+  @OneToMany(() => UserRole, (userRole) => userRole.user, {
+    eager: true,
+  })
   userRoles: UserRole[];
 }
