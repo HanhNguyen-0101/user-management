@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PermissionGroupsService } from './permission-groups.service';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
 import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 
+@ApiTags('Permission Group')
 @Controller('permission-groups')
 export class PermissionGroupsController {
-  constructor(private readonly permissionGroupsService: PermissionGroupsService) {}
+  constructor(
+    private readonly permissionGroupsService: PermissionGroupsService,
+  ) {}
 
   @Post()
   create(@Body() createPermissionGroupDto: CreatePermissionGroupDto) {
@@ -23,7 +35,10 @@ export class PermissionGroupsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermissionGroupDto: UpdatePermissionGroupDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePermissionGroupDto: UpdatePermissionGroupDto,
+  ) {
     return this.permissionGroupsService.update(+id, updatePermissionGroupDto);
   }
 

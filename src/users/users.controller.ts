@@ -11,8 +11,9 @@ import {
   ParseUUIDPipe,
   UsePipes,
   ValidationPipe,
-  Query
+  Query,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,11 +21,13 @@ import { User } from './entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterUserDto } from './dto/filter-user.dto';
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterUserDto): Promise<any> {
     return await this.usersService.findAll(query);
@@ -43,6 +46,11 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@Body() user: CreateUserDto): Promise<User> {
     return await this.usersService.create(user);

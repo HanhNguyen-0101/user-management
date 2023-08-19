@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { RolePermissionsService } from './role-permissions.service';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 
+@ApiTags('Role Permission')
 @Controller('role-permissions')
 export class RolePermissionsController {
-  constructor(private readonly rolePermissionsService: RolePermissionsService) {}
+  constructor(
+    private readonly rolePermissionsService: RolePermissionsService,
+  ) {}
 
   @Post()
   create(@Body() createRolePermissionDto: CreateRolePermissionDto) {
@@ -23,7 +35,10 @@ export class RolePermissionsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRolePermissionDto: UpdateRolePermissionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRolePermissionDto: UpdateRolePermissionDto,
+  ) {
     return this.rolePermissionsService.update(+id, updateRolePermissionDto);
   }
 
