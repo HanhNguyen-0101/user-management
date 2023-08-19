@@ -11,7 +11,7 @@ import {
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string
 
   @Column({
     length: 255,
@@ -22,13 +22,22 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: null,
+  })
   refreshToken: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: true,
+  })
   isPending: boolean;
 
-  @Column()
+  @Column({
+    nullable: true,
+    default: false,
+  })
   isDisable: boolean;
 
   @CreateDateColumn({
@@ -42,7 +51,7 @@ export class User {
   updatedAt: Date;
 
   @Column('uuid')
-  updatedBy: number;
+  updatedBy: string;
 
   @Column()
   firstName: string;

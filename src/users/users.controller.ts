@@ -7,25 +7,35 @@ import {
   Param,
   Delete,
   NotFoundException,
+  UseGuards,
+  ParseUUIDPipe,
+  UsePipes,
+  ValidationPipe,
+  Query,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { FilterUserDto } from './dto/filter-user.dto';
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  //get all users
+  @UseGuards(AuthGuard)
   @Get()
-  async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async findAll(@Query() query: FilterUserDto): Promise<any> {
+    return await this.usersService.findAll(query);
   }
 
-  //get user by id
+  @UseGuards(AuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException('User does not exist!');
@@ -34,29 +44,35 @@ export class UsersController {
     }
   }
 
-  //create user
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@Body() user: CreateUserDto): Promise<User> {
-    return this.usersService.create(user);
+    return await this.usersService.create(user);
   }
 
-  //update user
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() user: UpdateUserDto,
-  ): Promise<any> {
-    return this.usersService.update(id, user);
+  ): Promise<User> {
+    return await this.usersService.update(id, user);
   }
 
-  //delete user
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<any> {
-    //handle error if user does not exist
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new NotFoundException('User does not exist!');
     }
-    return this.usersService.delete(id);
+    return await this.usersService.delete(id);
   }
 }

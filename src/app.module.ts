@@ -9,11 +9,21 @@ import { PermissionsModule } from './permissions/permissions.module';
 import { PermissionGroupsModule } from './permission-groups/permission-groups.module';
 import { MenusModule } from './menus/menus.module';
 import { PermissionAssignLogModule } from './permission_assign_log/permission_assign_log.module';
-import { dataSourceOptions } from './config/typeorm';
+import typeorm from './config/typeorm';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(dataSourceOptions),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [typeorm],
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        configService.get('typeorm'),
+    }),
     UsersModule,
     UserRolesModule,
     RolePermissionsModule,
@@ -21,6 +31,7 @@ import { dataSourceOptions } from './config/typeorm';
     PermissionGroupsModule,
     MenusModule,
     PermissionAssignLogModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
