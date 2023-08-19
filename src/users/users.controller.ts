@@ -10,22 +10,24 @@ import {
   UseGuards,
   ParseUUIDPipe,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
+  Query
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findAll();
+  async findAll(@Query() query: FilterUserDto): Promise<any> {
+    return await this.usersService.findAll(query);
   }
 
   @UseGuards(AuthGuard)

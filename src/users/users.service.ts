@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,21 +14,50 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        globalId: true,
-        officeCode: true,
-        country: true,
-        updatedBy: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+  async findAll(query: FilterUserDto): Promise<any> {
+    const page = Number(query.page) || 1;
+    const itemPerPage = Number(query.item_per_page) || 10;
+    const skip = (page - 1) * itemPerPage;
+
+    const keyword = query.search || '';
+
+    const [res, total] = await this.userRepository.findAndCount({
+      where: [
+        { email: Like(`%${keyword}%`) },
+        { firstName: Like(`%${keyword}%`) },
+        { lastName: Like(`%${keyword}%`) },
+        { globalId: Like(`%${keyword}%`) },
+        { officeCode: Like(`%${keyword}%`) },
+        { country: Like(`%${keyword}%`) },
+      ],
+      order: { createdAt: 'DESC' },
+      take: itemPerPage,
+      skip,
+      select: [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'globalId',
+        'officeCode',
+        'country',
+        'updatedBy',
+        'updatedAt',
+        'createdAt',
+      ],
     });
+
+    const lastPage = Math.ceil(total / itemPerPage);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+
+    return {
+      data: res,
+      total,
+      currentPage: page,
+      nextPage,
+      prevPage,
+    };
   }
 
   async findOne(id: string): Promise<User> {
