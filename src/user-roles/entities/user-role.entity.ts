@@ -15,7 +15,9 @@ export class UserRole {
   })
   assignedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.userRoles)
+  @ManyToOne(() => User, (user) => user.userRoles, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @ManyToOne(() => Role, (role) => role.userRoles)

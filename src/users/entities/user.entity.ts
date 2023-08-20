@@ -78,6 +78,8 @@ export class User {
   // @JoinColumn({ name: 'updatedBy' })
   // updatedByUser: User;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @OneToMany(() => UserRole, (userRole) => userRole.user, {
+    eager: true,
+  })
   userRoles: UserRole[];
 }
