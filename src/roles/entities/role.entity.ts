@@ -5,7 +5,7 @@ import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Role {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     length: 255,

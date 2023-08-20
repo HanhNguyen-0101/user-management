@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   NotFoundException,
+  NotAcceptableException,
   UseGuards,
   ParseUUIDPipe,
   UsePipes,
@@ -54,6 +55,12 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@Req() req: any, @Body() user: CreateUserDto): Promise<User> {
+    if (user.email) {
+      const userExist = await this.usersService.findAll({ email: user.email });
+      if (userExist && userExist.length) {
+        throw new NotAcceptableException('Email existed!');
+      }
+    }
     return await this.usersService.create({ ...user, updatedBy: req.user.id });
   }
 
@@ -65,6 +72,12 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() user: UpdateUserDto,
   ): Promise<User> {
+    if (user.email) {
+      const userExist = await this.usersService.findAll({ email: user.email });
+      if (userExist && userExist.length) {
+        throw new NotAcceptableException('Email existed!');
+      }
+    }
     return await this.usersService.update(id, {
       ...user,
       updatedBy: req.user.id,

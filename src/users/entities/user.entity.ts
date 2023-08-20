@@ -7,7 +7,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
-  OneToOne,
   ManyToOne,
 } from 'typeorm';
 
@@ -79,8 +78,6 @@ export class User {
   @JoinColumn({ name: 'updatedBy' })
   updatedByUser: User;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user, {
-    eager: true,
-  })
+  @OneToMany(() => UserRole, (userRole) => userRole.user) // eager: true => Limit because affect to performance because auto query the relation data
   userRoles: UserRole[];
 }

@@ -20,15 +20,14 @@ export class UsersService {
     const skip = (page - 1) * itemPerPage;
 
     const keyword = query.search || '';
-
     const [res, total] = await this.userRepository.findAndCount({
       where: [
-        { email: Like(`%${keyword}%`) },
-        { firstName: Like(`%${keyword}%`) },
-        { lastName: Like(`%${keyword}%`) },
-        { globalId: Like(`%${keyword}%`) },
-        { officeCode: Like(`%${keyword}%`) },
-        { country: Like(`%${keyword}%`) },
+        { email: query.email || Like(`%${keyword}%`) },
+        { email: query.email, firstName: Like(`%${keyword}%`) },
+        { email: query.email, lastName: Like(`%${keyword}%`) },
+        { email: query.email, globalId: Like(`%${keyword}%`) },
+        { email: query.email, officeCode: Like(`%${keyword}%`) },
+        { email: query.email, country: Like(`%${keyword}%`) },
       ],
       order: { createdAt: 'DESC' },
       take: itemPerPage,
@@ -47,6 +46,7 @@ export class UsersService {
       ],
       relations: {
         updatedByUser: true,
+        userRoles: true,
       },
     });
 
@@ -68,6 +68,7 @@ export class UsersService {
       where: { id },
       relations: {
         updatedByUser: true,
+        userRoles: true,
       },
     });
   }
@@ -106,8 +107,9 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id } });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<string> {
     await this.userRepository.delete(id);
+    return `Deleted id=${id} successfully!`;
   }
 
   private async hashPassword(password: string): Promise<string> {
