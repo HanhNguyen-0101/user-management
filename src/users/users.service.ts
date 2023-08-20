@@ -45,9 +45,9 @@ export class UsersService {
         'updatedAt',
         'createdAt',
       ],
-      // relations: {
-      //   updatedByUser: true,
-      // },
+      relations: {
+        updatedByUser: true,
+      },
     });
 
     const lastPage = Math.ceil(total / itemPerPage);
@@ -66,9 +66,9 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     return await this.userRepository.findOne({
       where: { id },
-      // relations: {
-      //   updatedByUser: true,
-      // },
+      relations: {
+        updatedByUser: true,
+      },
     });
   }
 

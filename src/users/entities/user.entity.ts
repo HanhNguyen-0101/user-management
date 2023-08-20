@@ -6,8 +6,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   JoinColumn,
+  OneToOne,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -74,9 +75,9 @@ export class User {
   @Column()
   country: string;
 
-  // @ManyToOne(() => User)
-  // @JoinColumn({ name: 'updatedBy' })
-  // updatedByUser: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedByUser: User;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user, {
     eager: true,
