@@ -3,47 +3,123 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
+  UseGuards,
+  Query,
+  ParseUUIDPipe,
+  NotFoundException,
+  NotAcceptableException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PermissionGroupsService } from './permission-groups.service';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
 import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { FilterPermissionGroupDto } from './dto/filter-permission-group.dto';
+import { PermissionGroup } from './entities/permission-group.entity';
 
 @ApiTags('Permission Group')
+@ApiBearerAuth()
 @Controller('permission-groups')
 export class PermissionGroupsController {
   constructor(
     private readonly permissionGroupsService: PermissionGroupsService,
   ) {}
 
-  @Post()
-  create(@Body() createPermissionGroupDto: CreatePermissionGroupDto) {
-    return this.permissionGroupsService.create(createPermissionGroupDto);
-  }
-
+  @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.permissionGroupsService.findAll();
+  async findAll(@Query() query: FilterPermissionGroupDto): Promise<any> {
+    return await this.permissionGroupsService.findAll(query);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionGroupsService.findOne(+id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<PermissionGroup> {
+    const permissionGroup = await this.permissionGroupsService.findOne(id);
+    if (!permissionGroup) {
+      throw new NotFoundException('PermissionGroup does not exist!');
+    } else {
+      return permissionGroup;
+    }
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @UseGuards(AuthGuard)
+  @Get('name/:name')
+  async findOneByName(@Param('name') name: string): Promise<PermissionGroup> {
+    const permissionGroup =
+      await this.permissionGroupsService.findOneByName(name);
+    if (!permissionGroup) {
+      throw new NotFoundException('PermissionGroup does not exist!');
+    } else {
+      return permissionGroup;
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post()
+  async create(
+    @Body() permissionGroup: CreatePermissionGroupDto,
+  ): Promise<PermissionGroup> {
+    if (permissionGroup.name) {
+      const permissionGroupExist =
+        await this.permissionGroupsService.findOneByName(permissionGroup.name);
+      if (permissionGroupExist) {
+        throw new NotAcceptableException('Name existed!');
+      }
+    }
+    return await this.permissionGroupsService.create(permissionGroup);
+  }
+
+  @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
+  @Put(':id')
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePermissionGroupDto: UpdatePermissionGroupDto,
-  ) {
-    return this.permissionGroupsService.update(+id, updatePermissionGroupDto);
+  ): Promise<PermissionGroup> {
+    const permissionGroupIdExist =
+      await this.permissionGroupsService.findOne(id);
+    if (!permissionGroupIdExist) {
+      throw new NotAcceptableException('Name existed!');
+    }
+    if (
+      updatePermissionGroupDto.name &&
+      updatePermissionGroupDto.name !== permissionGroupIdExist.name
+    ) {
+      const permissionGroupExist =
+        await this.permissionGroupsService.findOneByName(
+          updatePermissionGroupDto.name,
+        );
+      if (permissionGroupExist) {
+        throw new NotAcceptableException('Name existed!');
+      }
+    }
+    return await this.permissionGroupsService.update(
+      id,
+      updatePermissionGroupDto,
+    );
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionGroupsService.remove(+id);
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
+    const permissionGroup = await this.permissionGroupsService.findOne(id);
+    if (!permissionGroup) {
+      throw new NotFoundException('PermissionGroup does not exist!');
+    }
+    return await this.permissionGroupsService.delete(id);
   }
 }

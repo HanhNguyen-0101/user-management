@@ -1,27 +1,36 @@
 import { Permission } from 'src/permissions/entities/permission.entity';
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class PermissionGroup {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     length: 255,
+    unique: true,
   })
   name: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp without time zone',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp without time zone',
   })
   updatedAt: Date;
 
-  @Column({
+  @DeleteDateColumn({
     type: 'timestamp without time zone',
   })
   deletedAt: Date;
