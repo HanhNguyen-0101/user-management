@@ -76,7 +76,7 @@ export class RolesService {
   }
 
   async delete(id: string): Promise<string> {
-    await this.roleRepository.delete(id);
+    await this.roleRepository.softDelete(id);
     return `Deleted id=${id} successfully!`;
   }
 }
