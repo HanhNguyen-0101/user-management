@@ -16,7 +16,6 @@ export class PermissionGroup {
 
   @Column({
     length: 255,
-    unique: true,
   })
   name: string;
 
@@ -34,7 +33,4 @@ export class PermissionGroup {
     type: 'timestamp without time zone',
   })
   deletedAt: Date;
-
-  @OneToMany(() => Permission, (permission) => permission.permissionGroupId)
-  permissions: Permission[];
 }

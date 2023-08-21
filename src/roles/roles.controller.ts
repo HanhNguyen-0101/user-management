@@ -12,7 +12,6 @@ import {
   ValidationPipe,
   UsePipes,
   Req,
-  NotAcceptableException,
   Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -48,17 +47,6 @@ export class RolesController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('name/:name')
-  async findOneByName(@Param('name') name: string): Promise<Role> {
-    const role = await this.rolesService.findOneByName(name);
-    if (!role) {
-      throw new NotFoundException('Role does not exist!');
-    } else {
-      return role;
-    }
-  }
-
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -67,12 +55,6 @@ export class RolesController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@Req() req: any, @Body() role: CreateRoleDto): Promise<Role> {
-    if (role.name) {
-      const roleExist = await this.rolesService.findOneByName(role.name);
-      if (roleExist) {
-        throw new NotAcceptableException('Name existed!');
-      }
-    }
     return await this.rolesService.create({ ...role, createdBy: req.user.id });
   }
 
@@ -88,12 +70,7 @@ export class RolesController {
     if (!roleIdExist) {
       throw new NotFoundException('Role does not exist!');
     }
-    if (role.name && role.name !== roleIdExist.name) {
-      const roleNameExist = await this.rolesService.findOneByName(role.name);
-      if (roleNameExist) {
-        throw new NotAcceptableException('Name existed!');
-      }
-    }
+
     return await this.rolesService.update(id, {
       ...role,
       updatedBy: req.user.id,

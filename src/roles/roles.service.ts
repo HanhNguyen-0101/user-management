@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -60,17 +60,31 @@ export class RolesService {
     });
   }
 
-  async findOneByName(name: string): Promise<Role> {
-    return await this.roleRepository.findOne({
-      where: { name },
-    });
-  }
-
   async create(role: CreateRoleDto): Promise<Role> {
+    const roleExist = await this.roleRepository.findOne({
+      where: {
+        name: role.name,
+      },
+    });
+    if (roleExist) {
+      throw new HttpException('Name existed!', HttpStatus.CONFLICT);
+    }
     return await this.roleRepository.save(role);
   }
 
   async update(id: string, role: UpdateRoleDto): Promise<Role> {
+    const roleIdExist = await this.roleRepository.findOne({
+      where: { id },
+    });
+    if (role.name && role.name !== roleIdExist.name) {
+      const roleNameExist = await this.roleRepository.findOne({
+        where: { name: role.name },
+      });
+      if (roleNameExist) {
+        throw new HttpException('Name existed!', HttpStatus.CONFLICT);
+      }
+    }
+
     await this.roleRepository.update(id, role);
     return await this.roleRepository.findOne({ where: { id } });
   }

@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
 import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionGroup } from './entities/permission-group.entity';
-import { Like, Repository } from 'typeorm';
+import { IsNull, Like, Repository } from 'typeorm';
 import { FilterPermissionGroupDto } from './dto/filter-permission-group.dto';
 
 @Injectable()
@@ -24,9 +24,6 @@ export class PermissionGroupsService {
       take: itemPerPage,
       skip,
       select: ['id', 'name', 'updatedAt', 'createdAt', 'deletedAt'],
-      relations: {
-        permissions: true,
-      },
     });
 
     const lastPage = Math.ceil(total / itemPerPage);
@@ -45,21 +42,21 @@ export class PermissionGroupsService {
   async findOne(id: string): Promise<PermissionGroup> {
     return await this.permissionGroupRepository.findOne({
       where: { id },
-      relations: {
-        permissions: true,
-      },
-    });
-  }
-
-  async findOneByName(name: string): Promise<PermissionGroup> {
-    return await this.permissionGroupRepository.findOne({
-      where: { name },
     });
   }
 
   async create(
     permissionGroup: CreatePermissionGroupDto,
   ): Promise<PermissionGroup> {
+    const permissionGroupExist = await this.permissionGroupRepository.findOne({
+      where: {
+        name: permissionGroup.name,
+        deletedAt: IsNull(),
+      },
+    });
+    if (permissionGroupExist) {
+      throw new HttpException('Name existed!', HttpStatus.CONFLICT);
+    }
     return await this.permissionGroupRepository.save(permissionGroup);
   }
 
@@ -67,6 +64,26 @@ export class PermissionGroupsService {
     id: string,
     permissionGroup: UpdatePermissionGroupDto,
   ): Promise<PermissionGroup> {
+    const permissionGroupIdExist = await this.permissionGroupRepository.findOne(
+      {
+        where: { id },
+      },
+    );
+    if (
+      permissionGroup.name &&
+      permissionGroup.name !== permissionGroupIdExist.name
+    ) {
+      const permissionGroupNameExist =
+        await this.permissionGroupRepository.findOne({
+          where: {
+            name: permissionGroup.name,
+          },
+        });
+      if (permissionGroupNameExist) {
+        throw new HttpException('Name existed!', HttpStatus.CONFLICT);
+      }
+    }
+
     await this.permissionGroupRepository.update(id, permissionGroup);
     return await this.permissionGroupRepository.findOne({ where: { id } });
   }

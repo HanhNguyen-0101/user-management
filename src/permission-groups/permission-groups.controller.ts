@@ -51,18 +51,6 @@ export class PermissionGroupsController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('name/:name')
-  async findOneByName(@Param('name') name: string): Promise<PermissionGroup> {
-    const permissionGroup =
-      await this.permissionGroupsService.findOneByName(name);
-    if (!permissionGroup) {
-      throw new NotFoundException('PermissionGroup does not exist!');
-    } else {
-      return permissionGroup;
-    }
-  }
-
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -73,13 +61,6 @@ export class PermissionGroupsController {
   async create(
     @Body() permissionGroup: CreatePermissionGroupDto,
   ): Promise<PermissionGroup> {
-    if (permissionGroup.name) {
-      const permissionGroupExist =
-        await this.permissionGroupsService.findOneByName(permissionGroup.name);
-      if (permissionGroupExist) {
-        throw new NotAcceptableException('Name existed!');
-      }
-    }
     return await this.permissionGroupsService.create(permissionGroup);
   }
 
@@ -94,18 +75,6 @@ export class PermissionGroupsController {
       await this.permissionGroupsService.findOne(id);
     if (!permissionGroupIdExist) {
       throw new NotAcceptableException('Name existed!');
-    }
-    if (
-      updatePermissionGroupDto.name &&
-      updatePermissionGroupDto.name !== permissionGroupIdExist.name
-    ) {
-      const permissionGroupExist =
-        await this.permissionGroupsService.findOneByName(
-          updatePermissionGroupDto.name,
-        );
-      if (permissionGroupExist) {
-        throw new NotAcceptableException('Name existed!');
-      }
     }
     return await this.permissionGroupsService.update(
       id,
