@@ -29,7 +29,7 @@ export class PermissionsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.permissionsService.findOne(+id);
+    return this.permissionsService.findOne(id);
   }
 
   @Patch(':id')

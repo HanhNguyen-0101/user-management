@@ -29,6 +29,7 @@ import { Role } from './entities/role.entity';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterRoleDto): Promise<any> {

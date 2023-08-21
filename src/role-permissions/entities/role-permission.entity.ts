@@ -5,14 +5,18 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class RolePermission {
   @PrimaryGeneratedColumn('uuid')
-  roleId: number;
+  roleId: string;
 
   @PrimaryGeneratedColumn('uuid')
-  permissionId: number;
+  permissionId: string;
 
-  @ManyToOne(() => Permission, (permission) => permission.rolePermissions)
+  @ManyToOne(() => Permission, (permission) => permission.rolePermissions, {
+    onDelete: 'CASCADE'
+  })
   permission: Permission;
 
-  @ManyToOne(() => Role, (role) => role.rolePermissions)
+  @ManyToOne(() => Role, (role) => role.rolePermissions, {
+    onDelete: 'CASCADE'
+  })
   role: Role;
 }

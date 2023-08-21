@@ -34,6 +34,7 @@ export class UserRolesController {
     private readonly rolesService: RolesService,
   ) {}
 
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterUserRoleDto): Promise<any> {
@@ -42,7 +43,7 @@ export class UserRolesController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  async findById(@Param('id', ParseUUIDPipe) id: string): Promise<UserRole> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserRole> {
     const userRole = await this.userRolesService.findOne(id);
     if (!userRole) {
       throw new NotFoundException('UserRole does not exist!');
@@ -98,6 +99,7 @@ export class UserRolesController {
     return await this.userRolesService.update(id, updateUserRoleDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const recordExist = await this.userRolesService.findOne(id);

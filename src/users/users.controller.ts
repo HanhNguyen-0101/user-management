@@ -29,6 +29,7 @@ import { FilterUserDto } from './dto/filter-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterUserDto): Promise<any> {

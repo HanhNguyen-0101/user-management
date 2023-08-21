@@ -12,7 +12,7 @@ export class PermissionsService {
     return `This action returns all permissions`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} permission`;
   }
 

@@ -12,7 +12,7 @@ import {
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     length: 255,
