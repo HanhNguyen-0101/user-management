@@ -1,8 +1,6 @@
-import { Permission } from 'src/permissions/entities/permission.entity';
 import {
   Entity,
   Column,
-  OneToMany,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,

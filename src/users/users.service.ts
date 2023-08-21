@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -22,12 +22,12 @@ export class UsersService {
     const keyword = query.search || '';
     const [res, total] = await this.userRepository.findAndCount({
       where: [
-        { email: Like(`%${keyword}%`) },
-        { firstName: Like(`%${keyword}%`) },
-        { lastName: Like(`%${keyword}%`) },
-        { globalId: Like(`%${keyword}%`) },
-        { officeCode: Like(`%${keyword}%`) },
-        { country: Like(`%${keyword}%`) },
+        { email: query.email || Like(`%${keyword}%`) },
+        { email: query.email, firstName: Like(`%${keyword}%`) },
+        { email: query.email, lastName: Like(`%${keyword}%`) },
+        { email: query.email, globalId: Like(`%${keyword}%`) },
+        { email: query.email, officeCode: Like(`%${keyword}%`) },
+        { email: query.email, country: Like(`%${keyword}%`) },
       ],
       order: { createdAt: 'DESC' },
       take: itemPerPage,
@@ -73,13 +73,14 @@ export class UsersService {
     });
   }
 
-  async findOneByEmail(email: string): Promise<User> {
-    return await this.userRepository.findOne({
-      where: { email },
-    });
-  }
-
   async create(user: CreateUserDto): Promise<User> {
+    const userExist = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
+    if (userExist) {
+      throw new HttpException('Email existed!', HttpStatus.CONFLICT);
+    }
+
     const hashPassword = await this.hashPassword(user.password);
     return await this.userRepository.save({
       ...user,
@@ -90,6 +91,15 @@ export class UsersService {
 
   async update(id: string, user: UpdateUserDto): Promise<User> {
     const userExist = await this.userRepository.findOne({ where: { id } });
+
+    if (user.email && user.email !== userExist.email) {
+      const userEmailExist = await this.userRepository.findOne({
+        where: { email: user.email },
+      });
+      if (userEmailExist) {
+        throw new HttpException('Email existed!', HttpStatus.CONFLICT);
+      }
+    }
 
     const isPasswordMatching = await bcrypt.compare(
       user.password,

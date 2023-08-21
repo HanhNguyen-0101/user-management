@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class FilterUserDto {
   @ApiProperty()
@@ -16,4 +16,9 @@ export class FilterUserDto {
   @IsOptional()
   @IsString()
   readonly search?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEmail()
+  readonly email?: string;
 }

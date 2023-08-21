@@ -4,12 +4,14 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Length,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
+  @Length(0, 255)
   readonly email: string;
 
   @ApiProperty()

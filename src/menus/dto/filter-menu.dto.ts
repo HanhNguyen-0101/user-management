@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class FilterRoleDto {
+export class FilterMenuDto {
   @ApiProperty()
   @IsNumberString()
   @IsOptional()
@@ -20,5 +20,5 @@ export class FilterRoleDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  readonly name?: string;
+  readonly key?: string;
 }

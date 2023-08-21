@@ -21,8 +21,8 @@ export class RolesService {
 
     const [res, total] = await this.roleRepository.findAndCount({
       where: [
-        { name: Like(`%${keyword}%`) },
-        { description: Like(`%${keyword}%`) },
+        { name: query.name || Like(`%${keyword}%`) },
+        { name: query.name, description: Like(`%${keyword}%`) },
       ],
       order: { createdAt: 'DESC' },
       take: itemPerPage,

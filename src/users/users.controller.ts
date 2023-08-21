@@ -48,17 +48,6 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('email/:email')
-  async findOneByEmail(@Param('email') email: string): Promise<User> {
-    const user = await this.usersService.findOneByEmail(email);
-    if (!user) {
-      throw new NotFoundException('User does not exist!');
-    } else {
-      return user;
-    }
-  }
-
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -67,12 +56,6 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post()
   async create(@Body() user: CreateUserDto): Promise<User> {
-    if (user.email) {
-      const userExist = await this.usersService.findOneByEmail(user.email);
-      if (userExist) {
-        throw new NotAcceptableException('Email existed!');
-      }
-    }
     return await this.usersService.create(user);
   }
 
@@ -88,12 +71,7 @@ export class UsersController {
     if (!userIdExist) {
       throw new NotAcceptableException('Email existed!');
     }
-    if (user.email && user.email !== userIdExist.email) {
-      const userExist = await this.usersService.findOneByEmail(user.email);
-      if (userExist) {
-        throw new NotAcceptableException('Email existed!');
-      }
-    }
+
     return await this.usersService.update(id, {
       ...user,
       updatedBy: req.user.id,
