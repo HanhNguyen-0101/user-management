@@ -29,10 +29,8 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto): Promise<User> {
-    const userList = await this.usersService.findAll({
-      email: registerUser.email,
-    });
-    if (userList && userList.length) {
+    const user = await this.usersService.findOneByEmail(registerUser.email);
+    if (user) {
       throw new NotAcceptableException('Email existed!');
     } else {
       return await this.authService.register(registerUser);

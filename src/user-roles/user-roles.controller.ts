@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
@@ -14,7 +13,6 @@ import {
   ValidationPipe,
   NotAcceptableException,
   Put,
-  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRolesService } from './user-roles.service';

@@ -78,7 +78,7 @@ export class UserRolesService {
       },
     });
     if (userRoleExist) {
-      throw new HttpException('UserRole was created!', HttpStatus.CREATED);
+      throw new HttpException('UserRole was created!', HttpStatus.CONFLICT);
     } else {
       const newUserRole = this.userRoleRepository.create(createUserRoleDto);
       return this.userRoleRepository.save(newUserRole);
@@ -96,7 +96,7 @@ export class UserRolesService {
       },
     });
     if (userRoleExist) {
-      throw new HttpException('UserRole was existed', HttpStatus.CREATED);
+      throw new HttpException('UserRole was existed', HttpStatus.CONFLICT);
     }
 
     await this.userRoleRepository.update(id, updateUserRoleDto);

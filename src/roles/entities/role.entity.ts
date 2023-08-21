@@ -1,6 +1,17 @@
 import { RolePermission } from 'src/role-permissions/entities/role-permission.entity';
 import { UserRole } from 'src/user-roles/entities/user-role.entity';
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Entity,
+  Column,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity()
 export class Role {
@@ -13,29 +24,45 @@ export class Role {
   })
   name: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp without time zone',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp without time zone',
   })
   updatedAt: Date;
 
-  @Column('uuid')
-  createdBy: number;
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
+  createdBy: string;
 
-  @Column('uuid')
-  updatedBy: number;
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
+  updatedBy: string;
 
   @Column('text')
   description: string;
 
-  @Column({
+  @DeleteDateColumn({
     type: 'timestamp without time zone',
   })
   deletedAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedByUser: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'createdBy' })
+  createdByUser: User;
 
   @OneToMany(() => UserRole, (userRole) => userRole.role)
   userRoles: UserRole[];
