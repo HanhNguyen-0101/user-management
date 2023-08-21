@@ -95,7 +95,7 @@ export class UserRolesService {
         roleId: updateUserRoleDto.roleId,
       },
     });
-    if (userRoleExist) {
+    if (userRoleExist && userRoleExist.id !== id) {
       throw new HttpException('UserRole was existed', HttpStatus.CONFLICT);
     }
 
