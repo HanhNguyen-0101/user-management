@@ -5,6 +5,7 @@ import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UserRole } from './entities/user-role.entity';
 import { Like, Repository } from 'typeorm';
 import { FilterUserRoleDto } from './dto/filter-user-role.dto';
+import { FindCompositeKeyUserRoleDto } from './dto/find-composite-key-user-role.dto';
 
 @Injectable()
 export class UserRolesService {
@@ -60,9 +61,12 @@ export class UserRolesService {
     };
   }
 
-  async findOne(id: string): Promise<UserRole> {
+  async findOne(params: FindCompositeKeyUserRoleDto): Promise<UserRole> {
     return await this.userRoleRepository.findOne({
-      where: { id },
+      where: {
+        userId: params.user_id,
+        roleId: params.role_id,
+      },
       relations: {
         user: true,
         role: true,
@@ -71,11 +75,9 @@ export class UserRolesService {
   }
 
   async create(createUserRoleDto: CreateUserRoleDto): Promise<UserRole> {
+    const { userId, roleId } = createUserRoleDto;
     const userRoleExist = await this.userRoleRepository.findOne({
-      where: {
-        userId: createUserRoleDto.userId,
-        roleId: createUserRoleDto.roleId,
-      },
+      where: { userId, roleId },
     });
     if (userRoleExist) {
       throw new HttpException('UserRole was created!', HttpStatus.CONFLICT);
@@ -86,27 +88,40 @@ export class UserRolesService {
   }
 
   async update(
-    id: string,
+    params: FindCompositeKeyUserRoleDto,
     updateUserRoleDto: UpdateUserRoleDto,
   ): Promise<UserRole> {
+    const { userId, roleId } = updateUserRoleDto;
     const userRoleExist = await this.userRoleRepository.findOne({
-      where: {
-        userId: updateUserRoleDto.userId,
-        roleId: updateUserRoleDto.roleId,
-      },
+      where: { userId, roleId },
     });
-    if (userRoleExist && userRoleExist.id !== id) {
+    if (
+      userRoleExist &&
+      !(
+        userRoleExist.userId === params.user_id &&
+        userRoleExist.roleId === params.role_id
+      )
+    ) {
       throw new HttpException('UserRole was existed', HttpStatus.CONFLICT);
     }
 
-    await this.userRoleRepository.update(id, updateUserRoleDto);
+    await this.userRoleRepository.update(
+      {
+        roleId: params.role_id,
+        userId: params.user_id,
+      },
+      updateUserRoleDto,
+    );
     return await this.userRoleRepository.findOne({
-      where: { id },
+      where: { roleId, userId },
     });
   }
 
-  async delete(id: string): Promise<string> {
-    await this.userRoleRepository.delete(id);
-    return `Deleted id=${id} successfully!`;
+  async delete(params: FindCompositeKeyUserRoleDto): Promise<string> {
+    await this.userRoleRepository.delete({
+      roleId: params.role_id,
+      userId: params.user_id,
+    });
+    return `Deleted roleId=${params.role_id} & userId=${params.user_id} successfully!`;
   }
 }

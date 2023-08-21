@@ -23,6 +23,7 @@ import { FilterUserRoleDto } from './dto/filter-user-role.dto';
 import { UserRole } from './entities/user-role.entity';
 import { UsersService } from 'src/users/users.service';
 import { RolesService } from 'src/roles/roles.service';
+import { FindCompositeKeyUserRoleDto } from './dto/find-composite-key-user-role.dto';
 
 @ApiTags('User Role')
 @ApiBearerAuth()
@@ -34,17 +35,20 @@ export class UserRolesController {
     private readonly rolesService: RolesService,
   ) {}
 
-  @UsePipes(ValidationPipe)
   @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   @Get()
   async findAll(@Query() query: FilterUserRoleDto): Promise<any> {
     return await this.userRolesService.findAll(query);
   }
 
   @UseGuards(AuthGuard)
-  @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserRole> {
-    const userRole = await this.userRolesService.findOne(id);
+  @UsePipes(ValidationPipe)
+  @Get(':user_id/:role_id')
+  async findOne(
+    @Param() params: FindCompositeKeyUserRoleDto,
+  ): Promise<UserRole> {
+    const userRole = await this.userRolesService.findOne(params);
     if (!userRole) {
       throw new NotFoundException('UserRole does not exist!');
     } else {
@@ -52,6 +56,7 @@ export class UserRolesController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -75,12 +80,12 @@ export class UserRolesController {
 
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
-  @Put(':id')
+  @Put(':user_id/:role_id')
   async update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param() params: FindCompositeKeyUserRoleDto,
     @Body() updateUserRoleDto: UpdateUserRoleDto,
   ) {
-    const userRole = await this.userRolesService.findOne(id);
+    const userRole = await this.userRolesService.findOne(params);
     if (!userRole) {
       throw new NotFoundException('UserRoleID does not exist!');
     }
@@ -96,16 +101,17 @@ export class UserRolesController {
         throw new NotAcceptableException('UserID does not exist!');
       }
     }
-    return await this.userRolesService.update(id, updateUserRoleDto);
+    return await this.userRolesService.update(params, updateUserRoleDto);
   }
 
   @UseGuards(AuthGuard)
-  @Delete(':id')
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
-    const recordExist = await this.userRolesService.findOne(id);
+  @UsePipes(ValidationPipe)
+  @Delete(':user_id/:role_id')
+  async delete(@Param() params: FindCompositeKeyUserRoleDto): Promise<any> {
+    const recordExist = await this.userRolesService.findOne(params);
     if (!recordExist) {
       throw new NotFoundException('Record does not exist!');
     }
-    return await this.userRolesService.delete(id);
+    return await this.userRolesService.delete(params);
   }
 }

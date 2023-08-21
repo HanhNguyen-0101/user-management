@@ -87,8 +87,9 @@ export class RolePermissionsService {
     params: FindCompositeKeyRolePermissionDto,
     updateRolePermissionDto: UpdateRolePermissionDto,
   ): Promise<RolePermission> {
+    const { permissionId, roleId } = updateRolePermissionDto;
     const rolePermissionExist = await this.rolePermissionRepository.findOne({
-      where: { permissionId: params.permission_id, roleId: params.role_id },
+      where: { permissionId, roleId },
     });
 
     if (
@@ -112,7 +113,7 @@ export class RolePermissionsService {
       updateRolePermissionDto,
     );
     return await this.rolePermissionRepository.findOne({
-      where: { permissionId: params.permission_id, roleId: params.role_id },
+      where: { permissionId, roleId },
     });
   }
 

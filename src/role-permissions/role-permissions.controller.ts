@@ -35,6 +35,7 @@ export class RolePermissionsController {
   ) {}
 
   @UseGuards(AuthGuard)
+  @UsePipes(ValidationPipe)
   @Get()
   async findAll(@Query() query: FilterRolePermissionDto): Promise<any> {
     return await this.rolePermissionsService.findAll(query);
@@ -55,6 +56,7 @@ export class RolePermissionsController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -82,7 +84,7 @@ export class RolePermissionsController {
 
   @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
-  @Put(':id')
+  @Put(':role_id/:permission_id')
   async update(
     @Param() params: FindCompositeKeyRolePermissionDto,
     @Body() updateRolePermissionDto: UpdateRolePermissionDto,

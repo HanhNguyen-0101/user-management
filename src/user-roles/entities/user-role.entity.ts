@@ -5,18 +5,14 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  Column,
 } from 'typeorm';
 
 @Entity()
 export class UserRole {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column('uuid')
   userId: string;
 
-  @Column('uuid')
+  @PrimaryGeneratedColumn('uuid')
   roleId: string;
 
   @CreateDateColumn({
