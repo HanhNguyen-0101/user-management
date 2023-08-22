@@ -16,7 +16,10 @@ export class PermissionAssignLogService {
     return `This action returns a #${id} permissionAssignLog`;
   }
 
-  update(id: number, updatePermissionAssignLogDto: UpdatePermissionAssignLogDto) {
+  update(
+    id: number,
+    updatePermissionAssignLogDto: UpdatePermissionAssignLogDto,
+  ) {
     return `This action updates a #${id} permissionAssignLog`;
   }
 

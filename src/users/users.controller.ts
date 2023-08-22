@@ -8,7 +8,6 @@ import {
   Delete,
   NotFoundException,
   NotAcceptableException,
-  UseGuards,
   ParseUUIDPipe,
   UsePipes,
   ValidationPipe,
@@ -20,7 +19,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterUserDto } from './dto/filter-user.dto';
 
 @ApiTags('Users')
@@ -30,13 +28,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterUserDto): Promise<any> {
     return await this.usersService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
@@ -47,7 +43,6 @@ export class UsersController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -59,7 +54,6 @@ export class UsersController {
     return await this.usersService.create(user);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
@@ -78,7 +72,6 @@ export class UsersController {
     });
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const user = await this.usersService.findOne(id);

@@ -8,7 +8,6 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  UseGuards,
   Query,
   ParseUUIDPipe,
   NotFoundException,
@@ -17,7 +16,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { Menu } from './entities/menu.entity';
 import { FilterMenuDto } from './dto/filter-menu.dto';
 
@@ -28,13 +26,11 @@ export class MenusController {
   constructor(private readonly menusService: MenusService) {}
 
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterMenuDto): Promise<any> {
     return await this.menusService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Menu> {
     const menu = await this.menusService.findOne(id);
@@ -45,7 +41,6 @@ export class MenusController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -57,7 +52,6 @@ export class MenusController {
     return await this.menusService.create(menu);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
@@ -72,7 +66,6 @@ export class MenusController {
     return await this.menusService.update(id, menu);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const menu = await this.menusService.findOne(id);

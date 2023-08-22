@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  UseGuards,
   Query,
   ParseUUIDPipe,
   NotFoundException,
@@ -18,7 +17,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterRoleDto } from './dto/filter-role.dto';
 import { Role } from './entities/role.entity';
 
@@ -29,13 +27,11 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterRoleDto): Promise<any> {
     return await this.rolesService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Role> {
     const role = await this.rolesService.findOne(id);
@@ -46,7 +42,6 @@ export class RolesController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -58,7 +53,6 @@ export class RolesController {
     return await this.rolesService.create({ ...role, createdBy: req.user.id });
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
@@ -77,7 +71,6 @@ export class RolesController {
     });
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const role = await this.rolesService.findOne(id);

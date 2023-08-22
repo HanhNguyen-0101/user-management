@@ -11,12 +11,12 @@ export class RolePermission {
   permissionId: string;
 
   @ManyToOne(() => Permission, (permission) => permission.rolePermissions, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   permission: Permission;
 
   @ManyToOne(() => Role, (role) => role.rolePermissions, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   role: Role;
 }

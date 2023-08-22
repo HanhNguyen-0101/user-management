@@ -8,7 +8,6 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  UseGuards,
   Query,
   ParseUUIDPipe,
   NotFoundException,
@@ -18,7 +17,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PermissionGroupsService } from './permission-groups.service';
 import { CreatePermissionGroupDto } from './dto/create-permission-group.dto';
 import { UpdatePermissionGroupDto } from './dto/update-permission-group.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterPermissionGroupDto } from './dto/filter-permission-group.dto';
 import { PermissionGroup } from './entities/permission-group.entity';
 
@@ -31,13 +29,11 @@ export class PermissionGroupsController {
   ) {}
 
   @UsePipes(ValidationPipe)
-  @UseGuards(AuthGuard)
   @Get()
   async findAll(@Query() query: FilterPermissionGroupDto): Promise<any> {
     return await this.permissionGroupsService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
@@ -50,7 +46,6 @@ export class PermissionGroupsController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -64,7 +59,6 @@ export class PermissionGroupsController {
     return await this.permissionGroupsService.create(permissionGroup);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':id')
   async update(
@@ -82,7 +76,6 @@ export class PermissionGroupsController {
     );
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<any> {
     const permissionGroup = await this.permissionGroupsService.findOne(id);

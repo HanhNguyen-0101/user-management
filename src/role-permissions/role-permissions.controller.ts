@@ -6,7 +6,6 @@ import {
   Put,
   Param,
   Delete,
-  UseGuards,
   Query,
   UsePipes,
   ValidationPipe,
@@ -19,7 +18,6 @@ import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { PermissionsService } from 'src/permissions/permissions.service';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterRolePermissionDto } from './dto/filter-role-permission.dto';
 import { FindCompositeKeyRolePermissionDto } from './dto/find-composite-key-role-permission.dto';
 import { RolePermission } from './entities/role-permission.entity';
@@ -34,14 +32,12 @@ export class RolePermissionsController {
     private readonly permissionsService: PermissionsService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Get()
   async findAll(@Query() query: FilterRolePermissionDto): Promise<any> {
     return await this.rolePermissionsService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Get(':role_id/:permission_id')
   async findOne(
@@ -56,7 +52,6 @@ export class RolePermissionsController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -82,7 +77,6 @@ export class RolePermissionsController {
     return await this.rolePermissionsService.create(createRolePermissionDto);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':role_id/:permission_id')
   async update(
@@ -115,7 +109,6 @@ export class RolePermissionsController {
     );
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Delete(':role_id/:permission_id')
   async delete(

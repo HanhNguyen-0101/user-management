@@ -6,8 +6,6 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  ParseUUIDPipe,
   NotFoundException,
   UsePipes,
   ValidationPipe,
@@ -18,7 +16,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRolesService } from './user-roles.service';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { FilterUserRoleDto } from './dto/filter-user-role.dto';
 import { UserRole } from './entities/user-role.entity';
 import { UsersService } from 'src/users/users.service';
@@ -35,14 +32,12 @@ export class UserRolesController {
     private readonly rolesService: RolesService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Get()
   async findAll(@Query() query: FilterUserRoleDto): Promise<any> {
     return await this.userRolesService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Get(':user_id/:role_id')
   async findOne(
@@ -56,7 +51,6 @@ export class UserRolesController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @ApiResponse({
     status: 201,
@@ -78,7 +72,6 @@ export class UserRolesController {
     return await this.userRolesService.create(createUserRoleDto);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Put(':user_id/:role_id')
   async update(
@@ -104,7 +97,6 @@ export class UserRolesController {
     return await this.userRolesService.update(params, updateUserRoleDto);
   }
 
-  @UseGuards(AuthGuard)
   @UsePipes(ValidationPipe)
   @Delete(':user_id/:role_id')
   async delete(@Param() params: FindCompositeKeyUserRoleDto): Promise<any> {
