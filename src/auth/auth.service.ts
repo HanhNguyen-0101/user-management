@@ -4,7 +4,6 @@ import { User } from 'src/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
