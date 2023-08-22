@@ -14,6 +14,7 @@ import { Public } from './auth.decorator';
 import { ApiResponse } from '@nestjs/swagger';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from 'src/users/entities/user.entity';
+import { GoogleOAuthGuard } from './google-oauth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -41,5 +42,17 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto): Promise<User> {
     return await this.authService.register(registerUser);
+  }
+  
+  @Public()
+  @UseGuards(GoogleOAuthGuard)
+  @Get('google/login')
+  async googleAuth(@Req() req) {}
+
+  @Public()
+  @UseGuards(GoogleOAuthGuard)
+  @Get('google/redirect')
+  googleAuthRedirect(@Req() req) {
+    return this.authService.googleLogin(req);
   }
 }

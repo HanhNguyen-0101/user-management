@@ -7,16 +7,18 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
+import { jwtConstants } from '../utils/constants';
 import { JwtStrategy } from './jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { GoogleStrategy } from './google.strategy';
+import { SessionSerializer } from './google.serializer';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
     TypeOrmModule.forFeature([User]),
+    PassportModule.register({ session: true }),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
@@ -30,6 +32,12 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    GoogleStrategy,
+    SessionSerializer,
+    {
+      provide: 'AUTH_SERVICE',
+      useClass: AuthService,
     },
   ],
   controllers: [AuthController],

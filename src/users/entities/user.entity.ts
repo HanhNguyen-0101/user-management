@@ -21,7 +21,9 @@ export class User {
   })
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   password: string;
 
   @Column({
@@ -56,16 +58,24 @@ export class User {
   @Column()
   firstName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   lastName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   globalId: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   officeCode: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   country: string;
 
   @ManyToOne(() => User)

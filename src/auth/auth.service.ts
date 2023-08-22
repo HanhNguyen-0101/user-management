@@ -30,6 +30,27 @@ export class AuthService {
     return null;
   }
 
+  async validateUserGoogle(details: any): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: details.email,
+      },
+    });
+
+    if (user) {
+      return user;
+    }
+    const newUser = await this.userRepository.create(details);
+    return await this.userRepository.save(newUser);
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      throw new HttpException('No user from google', HttpStatus.NOT_FOUND);
+    }
+    return this.generateToken({ id: req.user.id, email: req.user.email });
+  }
+
   async login(user: User) {
     return this.generateToken({ id: user.id, email: user.email });
   }

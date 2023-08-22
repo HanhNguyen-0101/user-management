@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserRolesModule } from './user-roles/user-roles.module';
@@ -32,6 +33,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     MenusModule,
     PermissionAssignLogModule,
     AuthModule,
+    PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
   providers: [AppService],
