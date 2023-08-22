@@ -6,12 +6,14 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id: string;
 
   @Column({
     length: 255,
@@ -50,7 +52,11 @@ export class User {
   })
   updatedAt: Date;
 
-  @Column('uuid')
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
   updatedBy: string;
 
   @Column()
@@ -68,6 +74,10 @@ export class User {
   @Column()
   country: string;
 
-  @OneToMany(() => UserRole, (userRole) => userRole.user)
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'updatedBy' })
+  updatedByUser: User;
+
+  @OneToMany(() => UserRole, (userRole) => userRole.user) // eager: true => Limit because affect to performance because auto query the relation data
   userRoles: UserRole[];
 }

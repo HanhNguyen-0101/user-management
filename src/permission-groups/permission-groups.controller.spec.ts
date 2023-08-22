@@ -11,7 +11,9 @@ describe('PermissionGroupsController', () => {
       providers: [PermissionGroupsService],
     }).compile();
 
-    controller = module.get<PermissionGroupsController>(PermissionGroupsController);
+    controller = module.get<PermissionGroupsController>(
+      PermissionGroupsController,
+    );
   });
 
   it('should be defined', () => {

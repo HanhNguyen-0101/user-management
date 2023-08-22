@@ -11,7 +11,9 @@ describe('PermissionAssignLogController', () => {
       providers: [PermissionAssignLogService],
     }).compile();
 
-    controller = module.get<PermissionAssignLogController>(PermissionAssignLogController);
+    controller = module.get<PermissionAssignLogController>(
+      PermissionAssignLogController,
+    );
   });
 
   it('should be defined', () => {

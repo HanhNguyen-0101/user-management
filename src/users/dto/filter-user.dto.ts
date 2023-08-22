@@ -1,11 +1,24 @@
-import { IsNumberString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class FilterUserDto {
+  @ApiProperty()
+  @IsOptional()
   @IsNumberString()
-  readonly page: string;
+  readonly page?: string;
 
+  @ApiProperty()
+  @IsOptional()
   @IsNumberString()
-  readonly item_per_page: string;
+  readonly item_per_page?: string;
 
-  readonly search: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  readonly search?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEmail()
+  readonly email?: string;
 }

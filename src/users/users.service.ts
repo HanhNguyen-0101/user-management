@@ -1,6 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApiQuery } from '@nestjs/swagger';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,15 +20,14 @@ export class UsersService {
     const skip = (page - 1) * itemPerPage;
 
     const keyword = query.search || '';
-
     const [res, total] = await this.userRepository.findAndCount({
       where: [
-        { email: Like(`%${keyword}%`) },
-        { firstName: Like(`%${keyword}%`) },
-        { lastName: Like(`%${keyword}%`) },
-        { globalId: Like(`%${keyword}%`) },
-        { officeCode: Like(`%${keyword}%`) },
-        { country: Like(`%${keyword}%`) },
+        { email: query.email || Like(`%${keyword}%`) },
+        { email: query.email, firstName: Like(`%${keyword}%`) },
+        { email: query.email, lastName: Like(`%${keyword}%`) },
+        { email: query.email, globalId: Like(`%${keyword}%`) },
+        { email: query.email, officeCode: Like(`%${keyword}%`) },
+        { email: query.email, country: Like(`%${keyword}%`) },
       ],
       order: { createdAt: 'DESC' },
       take: itemPerPage,
@@ -46,6 +44,10 @@ export class UsersService {
         'updatedAt',
         'createdAt',
       ],
+      relations: {
+        updatedByUser: true,
+        userRoles: true,
+      },
     });
 
     const lastPage = Math.ceil(total / itemPerPage);
@@ -62,18 +64,41 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return await this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        updatedByUser: true,
+        userRoles: true,
+      },
+    });
   }
 
   async create(user: CreateUserDto): Promise<User> {
+    const userExist = await this.userRepository.findOne({
+      where: { email: user.email },
+    });
+    if (userExist) {
+      throw new HttpException('Email existed!', HttpStatus.CONFLICT);
+    }
+
     const hashPassword = await this.hashPassword(user.password);
-    return await this.userRepository.save({ ...user, password: hashPassword });
+    return await this.userRepository.save({
+      ...user,
+      password: hashPassword,
+      refreshToken: 'refresh_token',
+    });
   }
 
   async update(id: string, user: UpdateUserDto): Promise<User> {
     const userExist = await this.userRepository.findOne({ where: { id } });
-    if (!userExist) {
-      throw new HttpException('UserID is not exist', HttpStatus.BAD_REQUEST);
+
+    if (user.email && user.email !== userExist.email) {
+      const userEmailExist = await this.userRepository.findOne({
+        where: { email: user.email },
+      });
+      if (userEmailExist) {
+        throw new HttpException('Email existed!', HttpStatus.CONFLICT);
+      }
     }
 
     const isPasswordMatching = await bcrypt.compare(
@@ -95,8 +120,9 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { id } });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<string> {
     await this.userRepository.delete(id);
+    return `Deleted id=${id} successfully!`;
   }
 
   private async hashPassword(password: string): Promise<string> {

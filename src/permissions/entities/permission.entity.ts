@@ -7,19 +7,22 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     length: 255,
   })
   name: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp without time zone',
   })
   createdAt: Date;
@@ -27,12 +30,12 @@ export class Permission {
   @Column('text')
   description: string;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp without time zone',
   })
   updatedAt: Date;
 
-  @Column({
+  @DeleteDateColumn({
     type: 'timestamp without time zone',
   })
   deletedAt: Date;
@@ -40,17 +43,20 @@ export class Permission {
   @Column()
   code: string;
 
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
+  permissionGroupId: string;
+
   @OneToMany(
     () => RolePermission,
     (rolePermission) => rolePermission.permission,
   )
   rolePermissions: RolePermission[];
 
-  @ManyToOne(
-    () => PermissionGroup,
-    (permissionGroup) => permissionGroup.permissions,
-    { cascade: true },
-  )
+  @ManyToOne(() => PermissionGroup)
   @JoinColumn({ name: 'permissionGroupId' })
-  permissionGroupId: PermissionGroup;
+  permissionGroup: PermissionGroup;
 }

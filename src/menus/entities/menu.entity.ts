@@ -1,34 +1,35 @@
-import { Permission } from 'src/permissions/entities/permission.entity';
 import {
   Entity,
   ManyToOne,
   Column,
-  OneToMany,
   PrimaryGeneratedColumn,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class Menu {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     length: 255,
   })
   name: string;
 
-  @Column({
+  @CreateDateColumn({
     type: 'timestamp without time zone',
   })
   createdAt: Date;
 
-  @Column({
+  @UpdateDateColumn({
     type: 'timestamp without time zone',
   })
   updatedAt: Date;
 
-  @Column({
+  @DeleteDateColumn({
     type: 'timestamp without time zone',
   })
   deletedAt: Date;
@@ -38,10 +39,14 @@ export class Menu {
   })
   key: string;
 
-  @OneToMany(() => Menu, (menu) => menu.parentId)
-  menus: Menu[];
+  @Column({
+    type: 'uuid',
+    nullable: true,
+    default: null,
+  })
+  parentId: string;
 
-  @ManyToOne(() => Menu, (menu) => menu.menus, { cascade: true })
+  @ManyToOne(() => Menu)
   @JoinColumn({ name: 'parentId' })
-  parentId: Menu;
+  parentMenu: Menu;
 }

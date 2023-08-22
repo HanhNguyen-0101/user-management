@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PermissionAssignLogService } from './permission_assign_log.service';
 import { CreatePermissionAssignLogDto } from './dto/create-permission_assign_log.dto';
 import { UpdatePermissionAssignLogDto } from './dto/update-permission_assign_log.dto';
 
 @Controller('permission-assign-log')
 export class PermissionAssignLogController {
-  constructor(private readonly permissionAssignLogService: PermissionAssignLogService) {}
+  constructor(
+    private readonly permissionAssignLogService: PermissionAssignLogService,
+  ) {}
 
   @Post()
   create(@Body() createPermissionAssignLogDto: CreatePermissionAssignLogDto) {
@@ -23,8 +33,14 @@ export class PermissionAssignLogController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePermissionAssignLogDto: UpdatePermissionAssignLogDto) {
-    return this.permissionAssignLogService.update(+id, updatePermissionAssignLogDto);
+  update(
+    @Param('id') id: string,
+    @Body() updatePermissionAssignLogDto: UpdatePermissionAssignLogDto,
+  ) {
+    return this.permissionAssignLogService.update(
+      +id,
+      updatePermissionAssignLogDto,
+    );
   }
 
   @Delete(':id')

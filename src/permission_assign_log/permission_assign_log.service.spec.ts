@@ -9,7 +9,9 @@ describe('PermissionAssignLogService', () => {
       providers: [PermissionAssignLogService],
     }).compile();
 
-    service = module.get<PermissionAssignLogService>(PermissionAssignLogService);
+    service = module.get<PermissionAssignLogService>(
+      PermissionAssignLogService,
+    );
   });
 
   it('should be defined', () => {
