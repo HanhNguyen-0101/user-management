@@ -85,7 +85,6 @@ export class UsersService {
     return await this.userRepository.save({
       ...user,
       password: hashPassword,
-      refreshToken: 'refresh_token',
     });
   }
 
@@ -125,7 +124,7 @@ export class UsersService {
     return `Deleted id=${id} successfully!`;
   }
 
-  private async hashPassword(password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     const saltOrRounds = 10;
     const salt = await bcrypt.genSalt(saltOrRounds);
     const hash = await bcrypt.hash(password, salt);
